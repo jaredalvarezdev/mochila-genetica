@@ -1,0 +1,342 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><title>Mochila genética</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Roboto+Condensed:wght@600;800&family=Roboto:wght@400;500;700&display=swap">
+<style>
+/* Diseño: una columna y nada más. Los 4 objetos, 5 pasos con una sola idea cada uno. Paleta de las diapositivas: azul-negro, verde olivo, gris acero (padre C). */
+:root{
+  --bg:#0a141b; --surface:#101e28; --surface-2:#142634; --line:#24394a;
+  --fg:#edf2ef; --muted:#9bb0b2;
+  --accent:#8fb04c; --on-accent:#0a141b; --accent-soft:rgba(143,176,76,.14);
+  --steel:#8fa7b6; --on-steel:#0a141b;
+  --bad:#ee8070; --bad-soft:rgba(238,128,112,.14);
+  --display:'Roboto Condensed','Arial Narrow',Arial,sans-serif;
+  --body:'Roboto',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#eef3f1; --surface:#ffffff; --surface-2:#e8eeec; --line:#c6d3d0;
+    --fg:#10222b; --muted:#506870;
+    --accent:#47750f; --on-accent:#ffffff; --accent-soft:rgba(71,117,15,.1);
+    --steel:#4f6d80; --on-steel:#ffffff;
+    --bad:#b03624; --bad-soft:rgba(176,54,36,.1);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#eef3f1; --surface:#ffffff; --surface-2:#e8eeec; --line:#c6d3d0;
+  --fg:#10222b; --muted:#506870;
+  --accent:#47750f; --on-accent:#ffffff; --accent-soft:rgba(71,117,15,.1);
+  --steel:#4f6d80; --on-steel:#ffffff;
+  --bad:#b03624; --bad-soft:rgba(176,54,36,.1);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-block:28px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h3,p{margin:0}
+button{font-family:inherit}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+
+.eyebrow{font:700 .8rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+h1{font:800 clamp(2.4rem,7vw,4rem)/1 var(--display);text-wrap:balance}
+h1 span{color:var(--accent)}
+.lede{max-width:56ch;color:var(--muted);font-size:1.15rem;margin-top:12px}
+
+/* Objetos */
+.objs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.obj{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.obj .on{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.obj .ov{font:800 1.8rem/1.1 var(--display)}
+.obj .ov2{font:600 1rem var(--mono);color:var(--accent)}
+.how{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;color:var(--muted)}
+.how b{color:var(--fg);font-weight:500}
+.pill{display:inline-flex;align-items:center;border:1px solid var(--accent);color:var(--accent);padding:4px 14px;border-radius:99px;font-weight:700;font-size:.9rem;white-space:nowrap}
+
+/* Pasos */
+.steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+.stepbtn{flex:none;display:flex;align-items:center;gap:8px;min-height:42px;padding:0 14px 0 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:.9rem;font-weight:500;cursor:pointer;white-space:nowrap}
+.stepbtn b{display:grid;place-items:center;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--surface-2);font:600 .8rem var(--mono);color:var(--muted)}
+.stepbtn.done b{background:var(--accent-soft);color:var(--accent)}
+.stepbtn[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.stepbtn[aria-current="step"] b{background:var(--on-accent);color:var(--accent)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:22px}
+.s-head{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.concept{font:700 .75rem var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:3px 12px}
+.s-head h3{font:800 clamp(1.9rem,5vw,2.6rem)/1.05 var(--display)}
+.s-head p{max-width:50ch;font-size:1.25rem;line-height:1.5}
+.rows{display:flex;flex-direction:column;gap:8px}
+.cap{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin:2px 0}
+.divider::before,.divider::after{content:"";flex:1;border-top:2px dashed var(--line)}
+.key{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.9rem;color:var(--muted)}
+.key i{display:inline-block;width:.8rem;height:.8rem;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.key .kb{background:var(--accent)}
+.key .kc{background:var(--steel)}
+
+/* Fila de individuo */
+.ind-head,.ind{display:grid;grid-template-columns:4.6rem 12.5rem minmax(0,1fr) 4rem;
+  grid-template-areas:"name chrom detail fit";column-gap:16px;align-items:center}
+.ind-head{padding:0 14px 2px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ind-head .r{text-align:right}
+.ind{padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);animation:rise .35s ease-out both}
+.ind.is-pick{border-color:var(--accent);background:var(--accent-soft)}
+.ind.is-dim{opacity:.5}
+.ind.is-out{border-color:var(--bad);background:var(--bad-soft)}
+.name{grid-area:name;font:800 1.6rem/1 var(--display)}
+.chrom{grid-area:chrom;justify-self:start;display:inline-flex;align-items:center;gap:4px}
+.br{font:500 1.4rem/1 var(--mono);color:var(--muted)}
+.detail{grid-area:detail;min-width:0;display:flex;flex-direction:column;gap:3px}
+.d1{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-weight:500}
+.fit{grid-area:fit;text-align:right;font:800 1.9rem/1 var(--display);color:var(--accent);font-variant-numeric:tabular-nums}
+.fit.zero{color:var(--bad)}
+.kg{font:500 .85rem var(--mono);color:var(--muted)}
+.kg.bad{color:var(--bad)}
+.tag{font:700 .68rem var(--body);letter-spacing:.07em;text-transform:uppercase;padding:2px 9px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.tag.good{color:var(--accent)}
+.tag.bad{color:var(--bad)}
+.tag.neutral{color:var(--muted)}
+
+/* Bits */
+.bit{position:relative;width:2.1rem;height:2.1rem;display:grid;place-items:center;border-radius:6px;font:600 1rem var(--mono);border:1.5px solid var(--line);color:var(--muted)}
+.bit.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.bit.o-b{border-color:var(--accent);color:var(--accent)}
+.bit.o-b.on{background:var(--accent);color:var(--on-accent)}
+.bit.o-c{border-color:var(--steel);color:var(--steel)}
+.bit.o-c.on{background:var(--steel);color:var(--on-steel)}
+.bit.cut{margin-left:1rem}
+.bit.cut::before{content:"";position:absolute;left:-11px;top:-.4rem;bottom:-.4rem;border-left:2px dashed var(--fg);opacity:.75}
+.bit.target{border-style:dashed;border-color:var(--fg);color:var(--fg)}
+.bit.flip{border-color:var(--bad);box-shadow:0 0 0 3px var(--bad-soft),0 0 0 1.5px var(--bad);animation:pop .5s ease-out}
+
+/* Resultado */
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.bigcard{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:14px 18px;display:flex;flex-direction:column;gap:4px}
+.bigcard span{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.bigcard strong{font:800 2.4rem/1.1 var(--display);font-variant-numeric:tabular-nums}
+.bigcard strong i{font-style:normal;color:var(--accent)}
+
+/* Botones */
+.btn{min-height:44px;padding:0 20px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);font-size:.95rem;font-weight:700;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn:disabled{opacity:.4;cursor:default}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.count{color:var(--muted);font-size:.9rem;text-align:center}
+
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+@media (max-width:760px){
+  .objs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stage{padding:16px}
+  .ind-head{display:none}
+  .ind{grid-template-columns:2.2rem minmax(0,1fr) auto;grid-template-areas:"name chrom fit" "detail detail detail";column-gap:10px;row-gap:10px;padding:12px}
+  .bit{width:1.85rem;height:1.85rem}
+  .bit.cut{margin-left:.8rem}
+  .bit.cut::before{left:-9px}
+  .name{font-size:1.3rem}
+  .fit::before{content:"fitness";display:block;font:500 .62rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  .controls{flex-wrap:wrap}
+  .count{order:3;width:100%}
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Algoritmos genéticos · Ejemplo práctico</p>
+    <h1>Problema de la <span>mochila</span></h1>
+    <p class="lede">Una mochila aguanta 10 kg. ¿Qué objetos llevamos para tener el mayor valor?</p>
+  </header>
+
+  <section aria-label="Los objetos">
+    <div class="objs" id="objs"></div>
+    <div class="how">
+      <span class="pill">Límite: 10 kg</span>
+      <span>Cada mochila se escribe con 4 números: <b>1 = lo llevo, 0 = lo dejo</b>.</span>
+    </div>
+  </section>
+
+  <section aria-label="Los 5 pasos">
+    <nav class="steps" id="nav" aria-label="Pasos del ejemplo"></nav>
+    <div class="stage" id="stage" aria-live="polite"></div>
+    <div class="controls">
+      <button class="btn" id="prev" type="button">← Anterior</button>
+      <span class="count" id="count"></span>
+      <button class="btn primary" id="next" type="button">Siguiente →</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var OBJ=[{kg:3,val:20},{kg:4,val:30},{kg:5,val:30},{kg:5,val:40}];
+  var LIMIT=10, CUT=2;
+
+  function ev(bits){
+    var kg=0,val=0;
+    bits.forEach(function(b,i){ if(b){ kg+=OBJ[i].kg; val+=OBJ[i].val; } });
+    var over=kg>LIMIT;
+    return {kg:kg,val:val,over:over,fit:over?0:val};
+  }
+  function lleva(bits){
+    var ids=[];
+    bits.forEach(function(b,i){ if(b) ids.push(i+1); });
+    if(!ids.length) return 'Sin objetos';
+    if(ids.length===1) return 'Obj. '+ids[0];
+    return 'Obj. '+ids.slice(0,-1).join(', ')+' y '+ids[ids.length-1];
+  }
+  function cross(p,q,cut){
+    return [p.slice(0,cut).concat(q.slice(cut)), q.slice(0,cut).concat(p.slice(cut))];
+  }
+  var f1=function(n){ return (Math.round(n*10)/10).toFixed(1); };
+
+  /* Datos del ejemplo (los mismos de las diapositivas) */
+  var A=[1,0,1,0], B=[0,1,1,0], C=[1,0,0,1];
+  var kids=cross(B,C,CUT), H1=kids[0], H2=kids[1];
+  var H2m=H2.map(function(b,i){ return i===1?1-b:b; });
+  var G0=[A,B,C], G1=[H1,B,C];
+  var fits=function(g){ return g.map(function(b){ return ev(b).fit; }); };
+  var best=function(g){ return Math.max.apply(null,fits(g)); };
+  var avg=function(g){ return fits(g).reduce(function(a,b){return a+b;},0)/g.length; };
+
+  var $=function(s){ return document.querySelector(s); };
+
+  function chrom(bits,o){
+    o=o||{};
+    var cells=bits.map(function(b,i){
+      var c=['bit',b?'on':'off'];
+      if(o.origin) c.push('o-'+o.origin[i].toLowerCase());
+      if(o.cut && i===o.cut) c.push('cut');
+      if(o.flip===i) c.push('flip');
+      if(o.target===i) c.push('target');
+      return '<span class="'+c.join(' ')+'" aria-hidden="true">'+b+'</span>';
+    }).join('');
+    return '<span class="chrom" role="img" aria-label="Cromosoma '+bits.join(', ')+'"><span class="br">[</span>'+cells+'<span class="br">]</span></span>';
+  }
+  function tag(t){ return t?'<span class="tag '+t[1]+'">'+t[0]+'</span>':''; }
+  function row(o){
+    var e=ev(o.bits);
+    var cls='ind'+(o.state?' is-'+o.state:'');
+    var peso='<span class="kg'+(e.over?' bad':'')+'">'+e.kg+' kg'+(e.over?' · se pasa de 10':'')+'</span>';
+    return '<div class="'+cls+'">'+
+      '<div class="name">'+o.name+'</div>'+
+      chrom(o.bits,o)+
+      '<div class="detail"><div class="d1"><span>'+lleva(o.bits)+'</span>'+tag(o.tag)+'</div>'+peso+'</div>'+
+      '<div class="fit'+(e.fit===0?' zero':'')+'">'+e.fit+'</div>'+
+    '</div>';
+  }
+  var head=function(){ return '<div class="ind-head"><span>Individuo</span><span>Cromosoma</span><span>Lleva y pesa</span><span class="r">Fitness</span></div>'; };
+  var rows=function(h){ return '<div class="rows">'+h+'</div>'; };
+
+  var step=0, mutated=false;
+  var STEPS=[
+    {short:'Empezamos',concept:'Población inicial',title:'Empezamos con 3 mochilas',
+     text:function(){ return 'El fitness es el valor de la mochila. Si pesa más de 10 kg, vale 0.'; },
+     body:function(){ return rows(head()+row({name:'A',bits:A})+row({name:'B',bits:B})+row({name:'C',bits:C})); }},
+    {short:'Elegimos',concept:'Selección',title:'Elegimos a los mejores',
+     text:function(){ return 'Los de más fitness serán los padres: B y C.'; },
+     body:function(){
+       return rows(head()+
+         row({name:'A',bits:A,state:'dim'})+
+         row({name:'B',bits:B,state:'pick',tag:['Padre','good']})+
+         row({name:'C',bits:C,state:'pick',tag:['Padre','good']}));
+     }},
+    {short:'Mezclamos',concept:'Cruzamiento',title:'Mezclamos a los padres',
+     text:function(){ return 'Cortamos sus cromosomas y los intercambiamos. Nacen H1 y H2.'; },
+     body:function(){
+       return '<div class="key"><span><i class="kb"></i>viene de B</span><span><i class="kc"></i>viene de C</span></div>'+
+         rows(head()+
+           '<div class="cap">Padres</div>'+
+           row({name:'B',bits:B,cut:CUT,origin:['B','B','B','B']})+
+           row({name:'C',bits:C,cut:CUT,origin:['C','C','C','C']})+
+           '<div class="divider">Se intercambian las colas</div>'+
+           '<div class="cap">Hijos</div>'+
+           row({name:'H1',bits:H1,cut:CUT,origin:['B','B','C','C'],tag:['Mejor que sus padres','good']})+
+           row({name:'H2',bits:H2,cut:CUT,origin:['C','C','B','B']}));
+     }},
+    {short:'Cambiamos',concept:'Mutación',title:'Cambiamos un número',
+     text:function(){
+       return mutated
+         ? 'Ahora H2 pesa 12 kg: se pasa y se descarta. A veces la mutación empeora, pero da variedad.'
+         : 'A H2 le cambiamos un número. Pulsa el botón.';
+     },
+     body:function(){
+       var h2=mutated
+         ? row({name:'H2′',bits:H2m,flip:1,state:'out',tag:['Descartado','bad']})
+         : row({name:'H2',bits:H2,target:1});
+       return rows(head()+row({name:'H1',bits:H1})+h2)+
+         '<div class="actions">'+(mutated
+           ? '<button class="btn" type="button" data-act="undo">Deshacer</button>'
+           : '<button class="btn primary" type="button" data-act="mutate">Mutar el 2.º número de H2</button>')+'</div>';
+     }},
+    {short:'Resultado',concept:'Nueva generación',title:'Nos quedamos con los mejores',
+     text:function(){ return 'Pasan H1, B y C. El mejor subió de 60 a 70, así que el algoritmo se detiene.'; },
+     body:function(){
+       return rows(head()+
+         row({name:'H1',bits:H1,state:'pick',tag:['Mejor solución','good']})+
+         row({name:'B',bits:B})+
+         row({name:'C',bits:C}))+
+         '<div class="big">'+
+           '<div class="bigcard"><span>Mejor fitness</span><strong>'+best(G0)+' <i>→</i> '+best(G1)+'</strong></div>'+
+           '<div class="bigcard"><span>Fitness promedio</span><strong>'+f1(avg(G0))+' <i>→</i> '+f1(avg(G1))+'</strong></div>'+
+         '</div>';
+     }}
+  ];
+  var N=STEPS.length;
+
+  var nav=$('#nav'), stage=$('#stage'), prev=$('#prev'), next=$('#next'), count=$('#count');
+  nav.innerHTML=STEPS.map(function(s,i){
+    return '<button class="stepbtn" type="button" data-step="'+i+'"><b>'+(i+1)+'</b>'+s.short+'</button>';
+  }).join('');
+
+  function render(focusAct){
+    var s=STEPS[step];
+    stage.innerHTML='<div class="s-head"><span class="concept">'+s.concept+'</span><h3>'+s.title+'</h3><p>'+s.text()+'</p></div>'+s.body();
+    nav.querySelectorAll('.stepbtn').forEach(function(b){
+      var i=+b.getAttribute('data-step');
+      if(i===step) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current');
+      b.classList.toggle('done',i<step);
+    });
+    count.textContent='Paso '+(step+1)+' de '+N;
+    prev.disabled=step===0;
+    next.textContent=step===N-1?'Volver al inicio ↺':'Siguiente →';
+    if(focusAct){ var a=stage.querySelector('[data-act]'); if(a) a.focus(); }
+  }
+  function go(n){
+    step=n;
+    if(step>=4) mutated=true;
+    if(step===0) mutated=false;
+    render(false);
+  }
+  nav.addEventListener('click',function(e){
+    var b=e.target.closest('.stepbtn'); if(b) go(+b.getAttribute('data-step'));
+  });
+  prev.addEventListener('click',function(){ if(step>0) go(step-1); });
+  next.addEventListener('click',function(){ go(step===N-1?0:step+1); });
+  stage.addEventListener('click',function(e){
+    var b=e.target.closest('[data-act]'); if(!b) return;
+    mutated=b.getAttribute('data-act')==='mutate';
+    render(true);
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.target.closest && e.target.closest('input,textarea,select')) return;
+    if(e.key==='ArrowRight' && step<N-1) go(step+1);
+    else if(e.key==='ArrowLeft' && step>0) go(step-1);
+  });
+
+  $('#objs').innerHTML=OBJ.map(function(o,i){
+    return '<div class="obj"><span class="on">Objeto '+(i+1)+'</span><span class="ov">'+o.kg+' kg</span><span class="ov2">$'+o.val+'</span></div>';
+  }).join('');
+
+  render(false);
+})();
+</script>
+</body></html>
